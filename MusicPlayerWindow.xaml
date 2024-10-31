@@ -72,6 +72,15 @@
                         </StackPanel>
                     </Button>
                 </WrapPanel>
+                <Slider HorizontalAlignment="Center" Width="100" Value="0" Minimum="1" Maximum="50" Margin="20 -15 19 0" Foreground="#FF731101" x:Name="VolumeSlider" />
+                <Canvas>
+                    <Grid Width="20" Height="20" Canvas.ZIndex="10" VerticalAlignment="Bottom" Canvas.Left="70" Canvas.Top="-14">
+                        <StackPanel Margin="-5" ToolTip="Volume Control">
+                            <materialDesign:PackIcon Kind="VolumeHigh" Width="20" Height="20" Foreground="White" />
+                        </StackPanel>
+                    </Grid>
+                </Canvas>
+
             </StackPanel>
         </materialDesign:Card>
     </Grid>
