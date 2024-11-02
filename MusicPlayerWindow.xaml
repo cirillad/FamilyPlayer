@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Height="550" Width="300" WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="{x:Null}">
     <Grid Background="{x:Null}">
-        <materialDesign:Card Margin="10" UniformCornerRadius="20" Background="{x:Null}" MouseDown="Card_MouseDown">
+        <materialDesign:Card Margin="10" UniformCornerRadius="20" Background="{x:Null}">
             <StackPanel>
                 <StackPanel.Background>
                     <LinearGradientBrush StartPoint="0.1,0" EndPoint="0.3,1">
@@ -17,17 +17,17 @@
                     </LinearGradientBrush>
                 </StackPanel.Background>
                 <Grid Height="70">
-                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Left" Margin="20 0" ToolTip="Back" x:Name="btnBack">
+                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Left" Margin="20 0" ToolTip="Back" x:Name="btnBack" Click="btnBack_Click">
                         <StackPanel Margin="-5">
                             <materialDesign:PackIcon Kind="ArrowBack" Width="20" Height="20" />
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Center" Margin="-65 0 0 0" ToolTip="Open music" x:Name="btnFile">
+                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Center" Margin="-65 0 0 0" ToolTip="Open music" x:Name="btnFile" Click="btnFile_Click">
                         <StackPanel Margin="-5">
                             <materialDesign:PackIcon Kind="Menu" Width="20" Height="20" />
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Center" Margin="65 0 0 0" ToolTip="Add music" x:Name="btnAdd">
+                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Center" Margin="65 0 0 0" ToolTip="Add music" x:Name="btnAdd" Click="btnAdd_Click">
                         <StackPanel Margin="-5">
                             <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" />
                         </StackPanel>
@@ -40,39 +40,42 @@
                 </Grid>
                 <Canvas>
                     <Grid Width="50" Height="50" Canvas.ZIndex="10" VerticalAlignment="Bottom" Canvas.Left="225" Canvas.Top="246">
-                        <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Center" ToolTip="Add to favorite" x:Name="btnLike">
+                        <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Center" ToolTip="Add to favorite" x:Name="btnLike" Click="btnLike_Click">
                             <StackPanel Margin="-5">
                                 <materialDesign:PackIcon Kind="Heart" Width="20" Height="20" />
                             </StackPanel>
                         </Button>
                     </Grid>
                 </Canvas>
-                <Image Margin="10" Height="200" x:Name="Musicimg" Stretch="Uniform" Source="Images/MusicIcon.png" />
-                <TextBlock Margin="10" FontSize="19" Text="Song name" Foreground="White" TextAlignment="Center" FontWeight="SemiBold" x:Name="lblSongname" />
-                <TextBlock FontSize="11" Text="C# WPF Mp3 Music Player" Foreground="White" TextAlignment="Center" FontWeight="ExtraLight" />
+                <Image Margin="10" Height="200" x:Name="Musicimg" Stretch="Uniform" Source="C:\Users\Roman\Desktop\GroupProject1\Images\MusicIcon.png"/>
+                <TextBlock Margin="10" FontSize="19" Text="Song name" Foreground="White" TextAlignment="Center" FontWeight="SemiBold" x:Name="lblSongName" />
+                <TextBlock FontSize="11" Text="C# WPF Mp3 Music Player" Foreground="White" TextAlignment="Center" FontWeight="ExtraLight" x:Name="lblArtistName" />
                 <Grid Margin="0 30 0 0">
-                    <TextBlock FontSize="11" Text="0:00" Margin="20 0" Foreground="White" FontWeight="ExtraLight" TextAlignment="Center" HorizontalAlignment="Left" x:Name="lblCurrenttime" />
-                    <TextBlock FontSize="11" Text="0:00" Margin="20 0" Foreground="White" FontWeight="ExtraLight" TextAlignment="Center" HorizontalAlignment="Right" x:Name="lblMusiclength" />
+                    <TextBlock FontSize="11" Text="0:00" Margin="20,0,0,0" Foreground="White" FontWeight="ExtraLight" TextAlignment="Center" HorizontalAlignment="Left" x:Name="lblCurrentTime" Height="15" VerticalAlignment="Top" />
+
+                    <TextBlock FontSize="11" Text="0:00" Margin="241,0,0,0" Foreground="White" FontWeight="ExtraLight" TextAlignment="Center" HorizontalAlignment="Left" x:Name="lblMusicLength" Height="15" VerticalAlignment="Top" />
                 </Grid>
-                <Slider Value="0" Minimum="1" Maximum="50" Margin="20 0" Foreground="#FF731101" x:Name="TimerSlider" />
+                <Slider Value="0" Minimum="0" Margin="20,0,20,0" Foreground="#FF731101" x:Name="TimerSlider" ValueChanged="TimerSlider_ValueChanged" />
+
                 <WrapPanel HorizontalAlignment="Center" Margin="0 30">
-                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Right" Margin="10 0" ToolTip="Play Next" x:Name="btnPNext">
-                        <StackPanel Margin="-5">
-                            <materialDesign:PackIcon Kind="FastForward" Width="20" Height="20" />
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Right" Margin="10 0" ToolTip="Play" x:Name="btnPlay">
-                        <StackPanel Margin="-5">
-                            <materialDesign:PackIcon Kind="Play" Width="20" Height="20" />
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Right" Margin="10 0" ToolTip="Play Next" x:Name="btnPRewind">
+                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Right" Margin="10 0" ToolTip="Play Next" x:Name="btnPRewind" Click="btnPRewind_Click">
                         <StackPanel Margin="-5">
                             <materialDesign:PackIcon Kind="FastRewind" Width="20" Height="20" />
                         </StackPanel>
                     </Button>
+                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Right" Margin="10 0" ToolTip="Play" x:Name="btnPlay" Click="btnPlay_Click">
+                        <StackPanel Margin="-5">
+                            <materialDesign:PackIcon Kind="Play" Width="20" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Right" Margin="10 0" ToolTip="Play Next" x:Name="btnPNext" Click="btnPNext_Click">
+                        <StackPanel Margin="-5">
+                            <materialDesign:PackIcon Kind="FastForward" Width="20" Height="20" />
+                        </StackPanel>
+                    </Button>
                 </WrapPanel>
-                <Slider HorizontalAlignment="Center" Width="100" Value="0" Minimum="1" Maximum="50" Margin="20 -15 19 0" Foreground="#FF731101" x:Name="VolumeSlider" />
+                <Slider HorizontalAlignment="Center" Width="100" Value="50" Minimum="0" Maximum="100" Margin="20 -15 19 0" Foreground="#FF731101" x:Name="VolumeSlider" ValueChanged="VolumeSlider_ValueChanged"/>
+
                 <Canvas>
                     <Grid Width="20" Height="20" Canvas.ZIndex="10" VerticalAlignment="Bottom" Canvas.Left="70" Canvas.Top="-14">
                         <StackPanel Margin="-5" ToolTip="Volume Control">
@@ -80,7 +83,6 @@
                         </StackPanel>
                     </Grid>
                 </Canvas>
-
             </StackPanel>
         </materialDesign:Card>
     </Grid>
