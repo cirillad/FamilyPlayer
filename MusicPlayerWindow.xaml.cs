@@ -43,6 +43,8 @@ namespace MusicPlayer
 
         private void btnFile_Click(object sender, RoutedEventArgs e)
         {
+            if (songSelectionWindow == null || !songSelectionWindow.IsVisible)
+            {
             string musicDirectory = @"C:\Users\Roman\Desktop\Music";
             songFiles = Directory.GetFiles(musicDirectory, "*.mp3");
 
