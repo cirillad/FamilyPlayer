@@ -1,232 +1,241 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Net;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
-
+using System.Windows.Threading;
 
 namespace MusicPlayer
 {
     public partial class MusicPlayerWindow : Window
     {
         private MediaPlayer mediaPlayer;
-        private bool isPaused;
-        private List<string> favoriteSongs;
-        private string favoritesFilePath = @"C:\Users\Roman\Desktop\Favorite Music\Favorites.txt";
-        private string favoritesFolderPath = @"C:\Users\Roman\Desktop\Favorite Music";
+        private string[] songFiles;
+        private int currentSongIndex;
+        private bool isPlaying = false; 
+        private string favoriteFolder = @"C:\Users\Roman\Desktop\Favorite Music";
+        private DispatcherTimer timer; 
 
         public MusicPlayerWindow()
         {
             InitializeComponent();
-
-            string ImgPath = $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString()}\\Images\\MusicIcon.png";
-            Musicimg.Source = new BitmapImage(new Uri(ImgPath));
-
             mediaPlayer = new MediaPlayer();
-            //mediaPlayer.MediaEnded += MediaPlayer_MediaEnded; 
-            isPaused = false;
-            //favoriteSongs = LoadFavoriteSongs();
+            songFiles = Array.Empty<string>();
+            VolumeSlider.Value = mediaPlayer.Volume * 100; 
 
-            //LoadSongs();
-        }
-
-        //private void LoadSongs()
-        //{
-        //    string musicFolder = @"C:\Users\Note\Desktop\Music";
-        //    var files = Directory.GetFiles(musicFolder, "*.mp3");
-        //    foreach (var file in files)
-        //    {
-        //        SongsComboBox.Items.Add(Path.GetFileName(file));
-        //    }
-        //}
-
-        //private void PlayButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (isPaused)
-        //    {
-        //        mediaPlayer.Play();
-        //        isPaused = false;
-        //    }
-        //    else
-        //    {
-        //        if (SongsComboBox.SelectedItem != null)
-        //        {
-        //            string selectedSong = (string)SongsComboBox.SelectedItem;
-        //            string fullPath = Path.Combine(@"C:\Users\Note\Desktop\Music", selectedSong);
-        //            mediaPlayer.Open(new Uri(fullPath));
-        //            mediaPlayer.Play();
-        //        }
-        //    }
-        //}
-
-        private void PauseButton_Click(object sender, RoutedEventArgs e)
-        {
-            mediaPlayer.Pause();
-            isPaused = true;
-        }
-
-        private void StopButton_Click(object sender, RoutedEventArgs e)
-        {
-            mediaPlayer.Stop();
-            isPaused = false;
-        }
-
-        //private void AddToFavoritesButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (SongsComboBox.SelectedItem != null)
-        //    {
-        //        string selectedSong = (string)SongsComboBox.SelectedItem;
-        //        string fullPath = Path.Combine(@"C:\Users\Note\Desktop\Music", selectedSong);
-
-        //        if (!favoriteSongs.Contains(fullPath))
-        //        {
-        //            if (!Directory.Exists(favoritesFolderPath))
-        //            {
-        //                try
-        //                {
-        //                    Directory.CreateDirectory(favoritesFolderPath);
-        //                    MessageBox.Show("Favorite Music folder created.");
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    MessageBox.Show($"Error creating folder: {ex.Message}");
-        //                    return;
-        //                }
-        //            }
-
-        //            string destinationPath = Path.Combine(favoritesFolderPath, selectedSong);
-        //            try
-        //            {
-        //                File.Copy(fullPath, destinationPath, true);
-        //                favoriteSongs.Add(destinationPath);
-        //                SaveFavoriteSongs();
-        //                MessageBox.Show($"{selectedSong} has been added to favorites!");
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                MessageBox.Show($"Error adding to favorites: {ex.Message}");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            MessageBox.Show($"{selectedSong} is already in favorites.");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show("Please select a song to add to favorites.");
-        //    }
-        //}
-
-        private List<string> LoadFavoriteSongs()
-        {
-            string directoryPath = Path.GetDirectoryName(favoritesFilePath);
-            if (!Directory.Exists(directoryPath))
+            if (!Directory.Exists(favoriteFolder))
             {
-                Directory.CreateDirectory(directoryPath);
+                Directory.CreateDirectory(favoriteFolder);
             }
 
-            if (File.Exists(favoritesFilePath))
-            {
-                return File.ReadAllLines(favoritesFilePath).ToList();
-            }
-            return new List<string>();
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += Timer_Tick;
         }
 
-        private void SaveFavoriteSongs()
+        private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-            File.WriteAllLines(favoritesFilePath, favoriteSongs);
-        }
-
-        private void SongsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void BackToMenuButton_Click(object sender, RoutedEventArgs e)
-        {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
             this.Close();
-            MainMenu mainMenu = new MainMenu();
-            mainMenu.Show();
         }
 
-        //private void MediaPlayer_MediaEnded(object sender, EventArgs e)
-        //{
-        //    if (RepeatModeRadioButton.IsChecked == true)
-        //    {
-        //        mediaPlayer.Position = TimeSpan.Zero;
-        //        mediaPlayer.Play(); 
-        //    }
-        //    else if (SequentialModeRadioButton.IsChecked == true)
-        //    {
-        //        int currentIndex = SongsComboBox.SelectedIndex;
-
-        //        if (currentIndex < SongsComboBox.Items.Count - 1)
-        //        {
-        //            SongsComboBox.SelectedIndex = currentIndex + 1;
-        //        }
-        //        else
-        //        {
-        //            SongsComboBox.SelectedIndex = 0;
-        //        }
-
-        //        PlayButton_Click(SongsComboBox, new RoutedEventArgs());
-        //    }
-        //}
-
-
-
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        private void btnFile_Click(object sender, RoutedEventArgs e)
         {
-            mediaPlayer.Stop();
-            base.OnClosing(e);
+            if (songSelectionWindow == null || !songSelectionWindow.IsVisible)
+            {
+            string musicDirectory = @"C:\Users\Roman\Desktop\Music";
+            songFiles = Directory.GetFiles(musicDirectory, "*.mp3");
+
+            var songSelectionWindow = new SongSelectionWindow(songFiles);
+            songSelectionWindow.SongSelected += SongSelectionWindow_SongSelected;
+            songSelectionWindow.ShowDialog();
         }
 
-        //private void DownloadButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var downloadWindow = new DownloadSongWindow();
-        //    if (downloadWindow.ShowDialog() == true)
-        //    {
-        //        string songUrl = downloadWindow.SongUrl;
-        //        DownloadSong(songUrl);
-        //    }
-        //}
-
-        //private void DownloadSong(string url)
-        //{
-        //    try
-        //    {
-        //        using (WebClient client = new WebClient())
-        //        {
-        //            string musicFolder = @"C:\Users\Note\Desktop\Music";
-        //            string fileName = Path.GetFileName(url);  
-        //            string destinationPath = Path.Combine(musicFolder, fileName);
-
-        //            client.DownloadFile(url, destinationPath);
-
-        //            SongsComboBox.Items.Add(fileName);
-        //            MessageBox.Show("Song downloaded successfully!");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Error downloading song: {ex.Message}");
-        //    }
-        //}
-
-        private void Card_MouseDown(object sender, MouseButtonEventArgs e)
+        private void SongSelectionWindow_SongSelected(object sender, string songPath)
         {
-            DragMove();
+            currentSongIndex = Array.IndexOf(songFiles, songPath);
+            if (currentSongIndex >= 0)
+            {
+                PlaySelectedSong(songPath);
+                UpdateSongInfo(songPath);
+                isPlaying = true;
+            }
+        }
+
+        private void PlaySelectedSong(string songPath)
+        {
+            StopCurrentSong();
+            mediaPlayer.Open(new Uri(songPath));
+            mediaPlayer.Play();
+
+            mediaPlayer.MediaOpened += (sender, e) =>
+            {
+                TimeSpan duration = mediaPlayer.NaturalDuration.HasTimeSpan ? mediaPlayer.NaturalDuration.TimeSpan : TimeSpan.Zero;
+                lblMusicLength.Text = $"{duration.Minutes}:{duration.Seconds:D2}";
+                TimerSlider.Maximum = duration.TotalSeconds; 
+            };
+
+            isPlaying = true;
+        }
+
+        private void StopCurrentSong()
+        {
+            if (mediaPlayer != null)
+            {
+                mediaPlayer.Stop();
+                isPlaying = false;
+                timer.Stop(); 
+                TimerSlider.Value = 0;
+            }
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            DownloadSongWindow downloadWindow = new DownloadSongWindow();
+            downloadWindow.SongDownloaded += DownloadWindow_SongDownloaded;
+            downloadWindow.ShowDialog();
+        }
+
+        private void DownloadWindow_SongDownloaded(object sender, (string songTitle, string artist, string songPath) songInfo)
+        {
+            var updatedSongFiles = songFiles.ToList();
+            updatedSongFiles.Add(songInfo.songPath);
+            songFiles = updatedSongFiles.ToArray();
+
+            lblSongName.Text = songInfo.songTitle;
+            lblArtistName.Text = songInfo.artist;
+
+            PlaySelectedSong(songInfo.songPath);
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
+            StopCurrentSong();
             Application.Current.Shutdown();
         }
+
+        private void UpdateSongInfo(string songPath)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(songPath);
+            string[] parts = fileName.Split('-');
+
+            if (parts.Length >= 2)
+            {
+                lblSongName.Text = parts[0].Trim();
+                lblArtistName.Text = parts[1].Trim();
+            }
+        }
+
+        private void btnPNext_Click(object sender, RoutedEventArgs e)
+        {
+            if (songFiles != null && songFiles.Length > 0)
+            {
+                currentSongIndex++;
+                if (currentSongIndex >= songFiles.Length)
+                {
+                    currentSongIndex = 0;
+                }
+
+                PlaySelectedSong(songFiles[currentSongIndex]);
+                UpdateSongInfo(songFiles[currentSongIndex]);
+            }
+            else
+            {
+                MessageBox.Show("Song list is empty.");
+            }
+        }
+
+        private void btnPRewind_Click(object sender, RoutedEventArgs e)
+        {
+            if (songFiles != null && songFiles.Length > 0)
+            {
+                currentSongIndex--;
+                if (currentSongIndex < 0)
+                {
+                    currentSongIndex = songFiles.Length - 1;
+                }
+
+                PlaySelectedSong(songFiles[currentSongIndex]);
+                UpdateSongInfo(songFiles[currentSongIndex]);
+            }
+            else
+            {
+                MessageBox.Show("Song list is empty.");
+            }
+        }
+
+        private void btnPlay_Click(object sender, RoutedEventArgs e)
+        {
+            if (isPlaying)
+            {
+                mediaPlayer.Pause();
+                isPlaying = false;
+                timer.Stop(); 
+            }
+            else
+            {
+                mediaPlayer.Play();
+                isPlaying = true;
+                timer.Start(); 
+            }
+        }
+
+        private void btnLike_Click(object sender, RoutedEventArgs e)
+        {
+            if (songFiles != null && currentSongIndex >= 0)
+            {
+                string songPath = songFiles[currentSongIndex];
+                string fileName = Path.GetFileName(songPath);
+                string favoritePath = Path.Combine(favoriteFolder, fileName);
+
+                if (File.Exists(favoritePath))
+                {
+                    MessageBox.Show("The song is already in the favorites.");
+                }
+                else
+                {
+                    File.Copy(songPath, favoritePath);
+                    MessageBox.Show("The song has been added to favorites.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("No song is currently playing.");
+            }
+        }
+
+        private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (mediaPlayer != null)
+            {
+                mediaPlayer.Volume = VolumeSlider.Value / 100; 
+            }
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (mediaPlayer.NaturalDuration.HasTimeSpan && mediaPlayer.Position < mediaPlayer.NaturalDuration.TimeSpan)
+            {
+                lblCurrentTime.Text = $"{mediaPlayer.Position.Minutes}:{mediaPlayer.Position.Seconds:D2}";
+                TimerSlider.Value = mediaPlayer.Position.TotalSeconds; 
+            }
+        }
+
+        private void TimerSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (mediaPlayer != null && TimerSlider.Value >= 0)
+            {
+                mediaPlayer.Position = TimeSpan.FromSeconds(TimerSlider.Value); 
+            }
+        }
+
+        private void TimerSlider_ValueChanged_1(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
+
+
     }
 }
