@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -13,21 +15,17 @@ namespace MusicPlayer
         private MediaPlayer mediaPlayer;
         private string[] songFiles;
         private int currentSongIndex;
-        private bool isPlaying = false; 
-        private string favoriteFolder = @"C:\Users\Roman\Desktop\Favorite Music";
-        private DispatcherTimer timer; 
+        private bool isPlaying = false;
+        private string favoriteFolder = @"C:\Users\Note\Desktop\Favorite Music";
+        private DispatcherTimer timer;
+        private bool isFavorite = false; // Властивість для перевірки, чи є пісня у вибраному
 
         public MusicPlayerWindow()
         {
             InitializeComponent();
             mediaPlayer = new MediaPlayer();
             songFiles = Array.Empty<string>();
-            VolumeSlider.Value = mediaPlayer.Volume * 100; 
-
-            if (!Directory.Exists(favoriteFolder))
-            {
-                Directory.CreateDirectory(favoriteFolder);
-            }
+            VolumeSlider.Value = mediaPlayer.Volume * 100;
 
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -41,11 +39,17 @@ namespace MusicPlayer
             this.Close();
         }
 
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
+        }
+
         private void btnFile_Click(object sender, RoutedEventArgs e)
         {
-            if (songSelectionWindow == null || !songSelectionWindow.IsVisible)
-            {
-            string musicDirectory = @"C:\Users\Roman\Desktop\Music";
+            string musicDirectory = @"C:\Users\Note\Desktop\Music";
             songFiles = Directory.GetFiles(musicDirectory, "*.mp3");
 
             var songSelectionWindow = new SongSelectionWindow(songFiles);
@@ -61,6 +65,8 @@ namespace MusicPlayer
                 PlaySelectedSong(songPath);
                 UpdateSongInfo(songPath);
                 isPlaying = true;
+                isFavorite = CheckIfFavorite(songPath);
+                UpdateLikeButtonIcon(); // Оновлення іконки серця
             }
         }
 
@@ -74,10 +80,12 @@ namespace MusicPlayer
             {
                 TimeSpan duration = mediaPlayer.NaturalDuration.HasTimeSpan ? mediaPlayer.NaturalDuration.TimeSpan : TimeSpan.Zero;
                 lblMusicLength.Text = $"{duration.Minutes}:{duration.Seconds:D2}";
-                TimerSlider.Maximum = duration.TotalSeconds; 
+                TimerSlider.Maximum = duration.TotalSeconds;
             };
 
             isPlaying = true;
+            (btnPlay.Content as StackPanel).Children.Clear();
+            (btnPlay.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.Pause, Width = 20, Height = 20 });
         }
 
         private void StopCurrentSong()
@@ -86,7 +94,7 @@ namespace MusicPlayer
             {
                 mediaPlayer.Stop();
                 isPlaying = false;
-                timer.Stop(); 
+                timer.Stop();
                 TimerSlider.Value = 0;
             }
         }
@@ -140,6 +148,8 @@ namespace MusicPlayer
 
                 PlaySelectedSong(songFiles[currentSongIndex]);
                 UpdateSongInfo(songFiles[currentSongIndex]);
+                isFavorite = CheckIfFavorite(songFiles[currentSongIndex]);
+                UpdateLikeButtonIcon();
             }
             else
             {
@@ -159,6 +169,8 @@ namespace MusicPlayer
 
                 PlaySelectedSong(songFiles[currentSongIndex]);
                 UpdateSongInfo(songFiles[currentSongIndex]);
+                isFavorite = CheckIfFavorite(songFiles[currentSongIndex]);
+                UpdateLikeButtonIcon();
             }
             else
             {
@@ -172,13 +184,19 @@ namespace MusicPlayer
             {
                 mediaPlayer.Pause();
                 isPlaying = false;
-                timer.Stop(); 
+                timer.Stop();
+
+                (btnPlay.Content as StackPanel).Children.Clear();
+                (btnPlay.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.Play, Width = 20, Height = 20 });
             }
             else
             {
                 mediaPlayer.Play();
                 isPlaying = true;
-                timer.Start(); 
+                timer.Start();
+
+                (btnPlay.Content as StackPanel).Children.Clear();
+                (btnPlay.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.Pause, Width = 20, Height = 20 });
             }
         }
 
@@ -193,12 +211,16 @@ namespace MusicPlayer
                 if (File.Exists(favoritePath))
                 {
                     MessageBox.Show("The song is already in the favorites.");
+                    isFavorite = true;
                 }
                 else
                 {
                     File.Copy(songPath, favoritePath);
                     MessageBox.Show("The song has been added to favorites.");
+                    isFavorite = true;
                 }
+
+                UpdateLikeButtonIcon();
             }
             else
             {
@@ -206,11 +228,32 @@ namespace MusicPlayer
             }
         }
 
+        private void UpdateLikeButtonIcon()
+        {
+            (btnLike.Content as StackPanel).Children.Clear();
+
+            if (isFavorite)
+            {
+                (btnLike.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.Heart, Width = 23, Height = 23 });
+            }
+            else
+            {
+                (btnLike.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.HeartOutline, Width = 23, Height = 23 });
+            }
+        }
+
+        private bool CheckIfFavorite(string songPath)
+        {
+            string fileName = Path.GetFileName(songPath);
+            string favoritePath = Path.Combine(favoriteFolder, fileName);
+            return File.Exists(favoritePath);
+        }
+
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (mediaPlayer != null)
             {
-                mediaPlayer.Volume = VolumeSlider.Value / 100; 
+                mediaPlayer.Volume = VolumeSlider.Value / 100;
             }
         }
 
@@ -219,7 +262,7 @@ namespace MusicPlayer
             if (mediaPlayer.NaturalDuration.HasTimeSpan && mediaPlayer.Position < mediaPlayer.NaturalDuration.TimeSpan)
             {
                 lblCurrentTime.Text = $"{mediaPlayer.Position.Minutes}:{mediaPlayer.Position.Seconds:D2}";
-                TimerSlider.Value = mediaPlayer.Position.TotalSeconds; 
+                TimerSlider.Value = mediaPlayer.Position.TotalSeconds;
             }
         }
 
@@ -227,15 +270,8 @@ namespace MusicPlayer
         {
             if (mediaPlayer != null && TimerSlider.Value >= 0)
             {
-                mediaPlayer.Position = TimeSpan.FromSeconds(TimerSlider.Value); 
+                mediaPlayer.Position = TimeSpan.FromSeconds(TimerSlider.Value);
             }
         }
-
-        private void TimerSlider_ValueChanged_1(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-
-        }
-
-
     }
 }
