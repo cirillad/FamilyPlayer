@@ -16,10 +16,17 @@ namespace MusicPlayer
         {
             string username = UsernameTextBox.Text;
             string password = PasswordTextBox.Password;
+            string confirmPassword = ConfirmPasswordTextBox.Password;
 
             if (!IsPasswordValid(password))
             {
                 MessageBox.Show("Password must be at least 8 characters long.", "Invalid Password", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (password != confirmPassword)
+            {
+                MessageBox.Show("Passwords do not match. Please make sure both passwords are the same.", "Password Mismatch", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -61,7 +68,7 @@ namespace MusicPlayer
 
         private bool IsPasswordValid(string password)
         {
-            return password.Length >= 8; 
+            return password.Length >= 8;
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
