@@ -16,9 +16,9 @@ namespace MusicPlayer
         private string[] songFiles;
         private int currentSongIndex;
         private bool isPlaying = false;
-        private string favoriteFolder = @"C:\Users\Note\Desktop\Favorite Music";
+        private string favoriteFolder = @"C:\Users\Roman\Desktop\Favorite Music";
         private DispatcherTimer timer;
-        private bool isFavorite = false; // Властивість для перевірки, чи є пісня у вибраному
+        private bool isFavorite = false; 
 
         public MusicPlayerWindow()
         {
@@ -49,7 +49,7 @@ namespace MusicPlayer
 
         private void btnFile_Click(object sender, RoutedEventArgs e)
         {
-            string musicDirectory = @"C:\Users\Note\Desktop\Music";
+            string musicDirectory = @"C:\Users\Roman\Desktop\Music";
             songFiles = Directory.GetFiles(musicDirectory, "*.mp3");
 
             var songSelectionWindow = new SongSelectionWindow(songFiles);
@@ -66,7 +66,7 @@ namespace MusicPlayer
                 UpdateSongInfo(songPath);
                 isPlaying = true;
                 isFavorite = CheckIfFavorite(songPath);
-                UpdateLikeButtonIcon(); // Оновлення іконки серця
+                UpdateLikeButtonIcon(); 
             }
         }
 
@@ -78,14 +78,25 @@ namespace MusicPlayer
 
             mediaPlayer.MediaOpened += (sender, e) =>
             {
-                TimeSpan duration = mediaPlayer.NaturalDuration.HasTimeSpan ? mediaPlayer.NaturalDuration.TimeSpan : TimeSpan.Zero;
-                lblMusicLength.Text = $"{duration.Minutes}:{duration.Seconds:D2}";
-                TimerSlider.Maximum = duration.TotalSeconds;
+                if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                {
+                    TimeSpan duration = mediaPlayer.NaturalDuration.TimeSpan;
+                    lblMusicLength.Text = $"{duration.Minutes}:{duration.Seconds:D2}";
+                    TimerSlider.Maximum = duration.TotalSeconds;
+                }
+                timer.Start(); 
             };
+
+            mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
 
             isPlaying = true;
             (btnPlay.Content as StackPanel).Children.Clear();
             (btnPlay.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.Pause, Width = 20, Height = 20 });
+        }
+
+        private void MediaPlayer_MediaEnded(object sender, EventArgs e)
+        {
+            btnPNext_Click(null, null); 
         }
 
         private void StopCurrentSong()
@@ -193,7 +204,7 @@ namespace MusicPlayer
             {
                 mediaPlayer.Play();
                 isPlaying = true;
-                timer.Start();
+                timer.Start(); 
 
                 (btnPlay.Content as StackPanel).Children.Clear();
                 (btnPlay.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.Pause, Width = 20, Height = 20 });
@@ -208,24 +219,57 @@ namespace MusicPlayer
                 string fileName = Path.GetFileName(songPath);
                 string favoritePath = Path.Combine(favoriteFolder, fileName);
 
-                if (File.Exists(favoritePath))
+                try
                 {
-                    MessageBox.Show("The song is already in the favorites.");
-                    isFavorite = true;
-                }
-                else
-                {
-                    File.Copy(songPath, favoritePath);
-                    MessageBox.Show("The song has been added to favorites.");
-                    isFavorite = true;
-                }
+                    if (isFavorite)
+                    {
+                        if (File.Exists(favoritePath))
+                        {
+                            File.Delete(favoritePath);
+                            MessageBox.Show("The song has been removed from favorites.");
+                            isFavorite = false; 
+                        }
+                        else
+                        {
+                            MessageBox.Show("The song is not in favorites.");
+                        }
+                    }
+                    else
+                    {
+                        if (!File.Exists(favoritePath))
+                        {
+                            File.Copy(songPath, favoritePath);
+                            MessageBox.Show("The song has been added to favorites.");
+                            isFavorite = true; 
+                        }
+                        else
+                        {
+                            MessageBox.Show("The song is already in favorites.");
+                        }
+                    }
 
-                UpdateLikeButtonIcon();
+                    UpdateLikeButtonIcon(); 
+
+                    UpdateFavoriteStatus();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}");
+                }
             }
             else
             {
                 MessageBox.Show("No song is currently playing.");
             }
+        }
+
+        private void UpdateFavoriteStatus()
+        {
+            string songPath = songFiles[currentSongIndex];
+            string fileName = Path.GetFileName(songPath);
+            string favoritePath = Path.Combine(favoriteFolder, fileName);
+
+            isFavorite = File.Exists(favoritePath);
         }
 
         private void UpdateLikeButtonIcon()
@@ -241,6 +285,7 @@ namespace MusicPlayer
                 (btnLike.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.HeartOutline, Width = 23, Height = 23 });
             }
         }
+
 
         private bool CheckIfFavorite(string songPath)
         {
