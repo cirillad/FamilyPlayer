@@ -5,7 +5,7 @@ namespace MusicPlayer
 {
     public partial class RegisterWindow : Window
     {
-        private string userFilePath = "users.txt"; 
+        private string userFilePath = "users.txt";
 
         public RegisterWindow()
         {
@@ -16,6 +16,12 @@ namespace MusicPlayer
         {
             string username = UsernameTextBox.Text;
             string password = PasswordTextBox.Password;
+
+            if (!IsPasswordValid(password))
+            {
+                MessageBox.Show("Password must be at least 8 characters long.", "Invalid Password", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             if (RegisterUser(username, password))
             {
@@ -41,7 +47,7 @@ namespace MusicPlayer
                 var parts = user.Split(':');
                 if (parts.Length == 2 && parts[0] == username)
                 {
-                    return false; 
+                    return false;
                 }
             }
 
@@ -49,21 +55,27 @@ namespace MusicPlayer
             {
                 sw.WriteLine($"{username}:{password}");
             }
-            return true; 
+
+            return true;
+        }
+
+        private bool IsPasswordValid(string password)
+        {
+            return password.Length >= 8; 
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
-            this.Close(); 
+            this.Close();
         }
 
         private void BackToMainMenu()
         {
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
-            this.Close(); 
+            this.Close();
         }
     }
 }
