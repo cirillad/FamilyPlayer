@@ -16,9 +16,11 @@ namespace MusicPlayer
         private string[] songFiles;
         private int currentSongIndex;
         private bool isPlaying = false;
-        private string favoriteFolder = @"C:\Users\Roman\Desktop\Favorite Music";
+        private string favoriteFolder = @"C:\Users\Note\Desktop\Favorite Music";
         private DispatcherTimer timer;
-        private bool isFavorite = false; 
+        private bool isFavorite = false;
+        private bool isRepeatMode = false;
+        private bool isMuted = false;
 
         public MusicPlayerWindow()
         {
@@ -49,7 +51,7 @@ namespace MusicPlayer
 
         private void btnFile_Click(object sender, RoutedEventArgs e)
         {
-            string musicDirectory = @"C:\Users\Roman\Desktop\Music";
+            string musicDirectory = @"C:\Users\Note\Desktop\Music";
             songFiles = Directory.GetFiles(musicDirectory, "*.mp3");
 
             var songSelectionWindow = new SongSelectionWindow(songFiles);
@@ -211,6 +213,20 @@ namespace MusicPlayer
             }
         }
 
+        private void btnMode_Click(object sender, RoutedEventArgs e)
+        {
+            isRepeatMode = !isRepeatMode;
+
+            // Змінюємо іконку відповідно до режиму
+            modeIcon.Kind = isRepeatMode ? PackIconKind.Repeat : PackIconKind.ShuffleVariant;
+
+            // Змінюємо підказку для користувача
+            btnMode.ToolTip = isRepeatMode ? "Repeat Mode" : "Sequential Mode";
+
+            // Додайте логіку для керування режимами відтворення за потреби
+            // Наприклад: player.SetPlayMode(isRepeatMode ? PlayMode.Repeat : PlayMode.Sequential);
+        }
+
         private void btnLike_Click(object sender, RoutedEventArgs e)
         {
             if (songFiles != null && currentSongIndex >= 0)
@@ -286,6 +302,24 @@ namespace MusicPlayer
             }
         }
 
+        private void btnMute_Click(object sender, RoutedEventArgs e)
+        {
+            if (isMuted)
+            {
+                // Якщо звук вимкнений, вмикаємо його
+                mediaPlayer.Volume = 1.0; // Встановлюємо максимальний рівень гучності
+                volumeIcon.Kind = PackIconKind.VolumeHigh; // Змінюємо іконку на VolumeHigh
+            }
+            else
+            {
+                // Якщо звук включений, вимикаємо його
+                mediaPlayer.Volume = 0; // Встановлюємо звук на 0
+                volumeIcon.Kind = PackIconKind.VolumeMute; // Змінюємо іконку на VolumeMute
+            }
+
+            // Перемикаємо стан
+            isMuted = !isMuted;
+        }
 
         private bool CheckIfFavorite(string songPath)
         {
@@ -299,6 +333,18 @@ namespace MusicPlayer
             if (mediaPlayer != null)
             {
                 mediaPlayer.Volume = VolumeSlider.Value / 100;
+
+                // Оновлюємо іконку залежно від рівня гучності
+                if (VolumeSlider.Value == 0)
+                {
+                    // Якщо гучність на нулі, ставимо іконку без звуку
+                    volumeIcon.Kind = PackIconKind.VolumeMute;
+                }
+                else
+                {
+                    // Якщо гучність більше нуля, ставимо іконку зі звуком
+                    volumeIcon.Kind = PackIconKind.VolumeHigh;
+                }
             }
         }
 
