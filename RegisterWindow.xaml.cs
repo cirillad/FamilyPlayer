@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using FamilyPlayer.Data;
+using FamilyPlayer.Models;
+using System.IO;
 using System.Windows;
 
 namespace MusicPlayer
@@ -6,7 +8,7 @@ namespace MusicPlayer
     public partial class RegisterWindow : Window
     {
         private string userFilePath = "users.txt";
-
+        MusicPlayerContext context=new MusicPlayerContext();
         public RegisterWindow()
         {
             InitializeComponent();
@@ -32,6 +34,7 @@ namespace MusicPlayer
 
             if (RegisterUser(username, password))
             {
+                context.Users.Add(new User() { Username = username, Password = password });
                 MessageBox.Show("Registration successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 BackToMainMenu();
             }
@@ -44,6 +47,10 @@ namespace MusicPlayer
         private bool RegisterUser(string username, string password)
         {
             if (!File.Exists(userFilePath))
+            {
+                File.Create(userFilePath).Close();
+            }
+            if (context.Users.Where(u=>u.Username==username&&u.Password==password).Any()) { }
             {
                 File.Create(userFilePath).Close();
             }

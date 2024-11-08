@@ -15,8 +15,12 @@ namespace FamilyPlayer.Data
         public DbSet<Song> Songs { get; set; }
         public DbSet<FavoriteSong> FavoriteSongs { get; set; }
 
-        public MusicPlayerContext(DbContextOptions<MusicPlayerContext> options) : base(options) { }
-
+        public MusicPlayerContext()  { }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseSqlServer(@"workstation id=FamilyPlayer.mssql.somee.com;packet size=4096;user id=Hattori1_SQLLogin_1;pwd=hz9gzpr8rm;data source=FamilyPlayer.mssql.somee.com;persist security info=False;initial catalog=FamilyPlayer;TrustServerCertificate=True");
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
