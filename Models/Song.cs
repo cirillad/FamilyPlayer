@@ -14,5 +14,6 @@ namespace FamilyPlayer.Models
         public string Path { get; set; } 
 
         public ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
+        public ICollection<FavoriteSong> FavoriteSong { get; set; } = new List<FavoriteSong>();
     }
 }
