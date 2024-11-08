@@ -36,8 +36,8 @@ namespace MusicPlayer
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
+            MainMenu MainMenu = new MainMenu();
+            MainMenu.Show();
             this.Close();
         }
 

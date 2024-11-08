@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Select Song" Height="400" Width="300" 
+        Title="Select Song" Height="550" Width="300" 
         WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="NoResize" 
         AllowsTransparency="True" Background="{x:Null}" 
         MouseDown="Window_MouseDown">
@@ -16,10 +16,35 @@
                     </LinearGradientBrush>
                 </StackPanel.Background>
 
-                <TextBlock Margin="10" FontSize="19" Text="Select a Song" Foreground="White" 
-                           TextAlignment="Center" FontWeight="SemiBold"/>
 
-                <ScrollViewer Height="240" Margin="10" HorizontalAlignment="Center" Width="250">
+
+                <StackPanel Margin="10">
+                    <Grid Width="225" HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Back Button -->
+                        <Button Style="{StaticResource CActionButtons}" ToolTip="Back" x:Name="btnBack" Click="btnBack_Click" HorizontalAlignment="Left">
+                            <StackPanel>
+                                <materialDesign:PackIcon Kind="ArrowBack" Width="20" Height="20" />
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Margin="10" FontSize="19" Width="130" Text="Select Song" Foreground="White" 
+                                   TextAlignment="Center" FontWeight="SemiBold"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Manual Watermark using TextBlock -->
+                <Grid Margin="10">
+                    <TextBlock x:Name="WatermarkTextBlock" Text="Search songs..." Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"/>
+                    <TextBox x:Name="SearchTextBox" Margin="5,0,0,0" Height="30" VerticalAlignment="Top" Background="#292929" Foreground="White" 
+                             BorderBrush="#610F03" BorderThickness="1" TextChanged="SearchTextBox_TextChanged" GotFocus="SearchTextBox_GotFocus" LostFocus="SearchTextBox_LostFocus"/>
+                </Grid>
+
+                <ScrollViewer Height="430" Margin="10" HorizontalAlignment="Center" Width="250">
                     <ScrollViewer.Resources>
                         <Style TargetType="ScrollBar">
                             <Setter Property="Background" Value="#B0B0B0"/>
@@ -41,19 +66,8 @@
                         </Style>
                     </ScrollViewer.Resources>
                     <ListBox Name="SongListBox" Background="#292929" Foreground="White"
-                             BorderBrush="#610F03" BorderThickness="1"/>
+                             BorderBrush="#610F03" BorderThickness="1" MouseDoubleClick="SongListBox_MouseDoubleClick"/>
                 </ScrollViewer>
-
-                <!-- Додаємо горизонтальний StackPanel для кнопок -->
-                <StackPanel Orientation="Horizontal" Width="225" HorizontalAlignment="Center" Margin="10">
-                    <Button Style="{StaticResource CActionButtons}" Margin="0 0 10 0" ToolTip="Back" x:Name="btnBack" Click="btnBack_Click">
-                        <StackPanel Margin="-5">
-                            <materialDesign:PackIcon Kind="ArrowBack" Width="20" Height="20" />
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource CActionButtons}" HorizontalAlignment="Right" Margin="135 0 10 0" Content="Play" 
-                            Click="PlayButton_Click" />
-                </StackPanel>
             </StackPanel>
         </materialDesign:Card>
     </Grid>
