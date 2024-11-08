@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MusicPlayer
 {
@@ -57,6 +58,18 @@ namespace MusicPlayer
             {
                 sw.WriteLine($"{fileName}:{title}:{artist}");
             }
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+            // Закриття поточного вікна
+            this.Close();
         }
     }
 }

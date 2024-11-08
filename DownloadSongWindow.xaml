@@ -1,14 +1,68 @@
 ﻿<Window x:Class="MusicPlayer.DownloadSongWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Download Song" Height="300" Width="500">
-    <StackPanel Margin="20">
-        <TextBlock Text="Song URL:" FontWeight="Bold" />
-        <TextBox Name="SongUrlTextBox" Margin="0,5,0,10" />
-        <TextBlock Text="Song Title:" FontWeight="Bold" />
-        <TextBox Name="SongTitleTextBox" Margin="0,5,0,10" />
-        <TextBlock Text="Artist:" FontWeight="Bold" />
-        <TextBox Name="ArtistTextBox" Margin="0,5,0,10" />
-        <Button Content="Download" Click="DownloadButton_Click" Margin="0,10,0,0"/>
-    </StackPanel>
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Download Song" Height="320" Width="500"
+        WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="NoResize"
+        AllowsTransparency="True" Background="{x:Null}" MouseDown="Window_MouseDown">
+    <Grid Background="{x:Null}">
+        <materialDesign:Card Margin="10" UniformCornerRadius="20" Background="{x:Null}">
+            <StackPanel>
+                <StackPanel.Background>
+                    <LinearGradientBrush StartPoint="0.1,0" EndPoint="0.3,1">
+                        <GradientStop Color="#121212" Offset="1" />
+                        <GradientStop Color="#292929" Offset="0" />
+                    </LinearGradientBrush>
+                </StackPanel.Background>
+
+                <!-- Додаємо горизонтальний StackPanel для кнопок -->
+                <StackPanel Margin="10" Width="420">
+                    <Grid Width="420" HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Кнопка "Back" вирівняна в ліву частину -->
+                        <Button Style="{StaticResource CActionButtons}" ToolTip="Back" x:Name="btnBack" Click="btnBack_Click" HorizontalAlignment="Left">
+                            <StackPanel>
+                                <materialDesign:PackIcon Kind="ArrowBack" Width="20" Height="20" />
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Margin="10" FontSize="19" Width="200" Text="Download Song" Foreground="White" 
+                           TextAlignment="Center" FontWeight="SemiBold"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Введення URL пісні -->
+                <TextBlock Text="Song URL:" FontWeight="Bold" Foreground="White" Margin="10,5,0,5"/>
+                <TextBox Name="SongUrlTextBox" Background="#292929" Foreground="White"
+                         BorderBrush="#610F03" Margin="10,0,10,10"/>
+
+                <!-- Введення заголовка пісні -->
+                <TextBlock Text="Song Title:" FontWeight="Bold" Foreground="White" Margin="10,5,0,5"/>
+                <TextBox Name="SongTitleTextBox" Background="#292929" Foreground="White"
+                         BorderBrush="#610F03" Margin="10,0,10,10"/>
+
+                <!-- Введення артиста -->
+                <TextBlock Text="Artist:" FontWeight="Bold" Foreground="White" Margin="10,5,0,5"/>
+                <TextBox Name="ArtistTextBox" Background="#292929" Foreground="White"
+                         BorderBrush="#610F03" Margin="10,0,10,10"/>
+
+                <!-- Кнопка "Download" -->
+                <Button Style="{StaticResource CActionButtons}" Content="Download" Margin="0 10 0 0" 
+                        Width="100" Height="30" HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" Click="DownloadButton_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="5">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </materialDesign:Card>
+    </Grid>
 </Window>
