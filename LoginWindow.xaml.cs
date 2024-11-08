@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MusicPlayer
 {
@@ -46,11 +47,26 @@ namespace MusicPlayer
             return false; 
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+            // Закриття поточного вікна
             this.Close();
+
+            // Створення та відкриття MainWindow
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
+        }
+
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
