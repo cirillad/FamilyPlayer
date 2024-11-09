@@ -15,7 +15,7 @@
                     </LinearGradientBrush>
                 </StackPanel.Background>
 
-                <!-- Кнопка "Back" -->
+                <!-- Кнопка "Exit" -->
                 <StackPanel Margin="10">
                     <Grid Width="225" HorizontalAlignment="Center">
                         <Grid.ColumnDefinitions>
@@ -23,10 +23,10 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Кнопка "Back" вирівняна в ліву частину -->
-                        <Button Style="{StaticResource CActionButtons}" ToolTip="Back" x:Name="btnBack" Click="btnBack_Click" HorizontalAlignment="Left">
+                        <!-- Кнопка "Exit" вирівняна в ліву частину -->
+                        <Button Style="{StaticResource CActionButtons}" ToolTip="Exit" x:Name="btnExit" Click="btnExit_Click" HorizontalAlignment="Left">
                             <StackPanel>
-                                <materialDesign:PackIcon Kind="ArrowBack" Width="20" Height="20" />
+                                <materialDesign:PackIcon Kind="ExitToApp" Width="20" Height="20" />
                             </StackPanel>
                         </Button>
 

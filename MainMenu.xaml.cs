@@ -39,6 +39,15 @@ namespace MusicPlayer
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
         }
+        private void btnExit_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Do you really want to log out?", "Exit confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                Application.Current.Shutdown();
+            }
+        }
 
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
