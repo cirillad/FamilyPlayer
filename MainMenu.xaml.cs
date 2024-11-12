@@ -54,5 +54,10 @@ namespace MusicPlayer
         {
             Application.Current.Shutdown();
         }
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }

@@ -16,11 +16,11 @@ namespace MusicPlayer
         private string[] songFiles;
         private int currentSongIndex;
         private bool isPlaying = false;
-        private string favoriteFolder = @"C:\Users\Roman\Desktop\Favorite Music";
+        private string favoriteFolder = @"C:\Users\Note\Desktop\Favorite Music";
         private DispatcherTimer timer;
         private bool isFavorite = false;
         private bool isRepeatMode = false;
-        private bool isSequentialMode = false;
+        private bool isSequentialMode = true;
         private bool isMuted = false;
         private double previousVolume = 0.5; // Змінна для збереження рівня гучності
 
@@ -32,6 +32,8 @@ namespace MusicPlayer
             mediaPlayer = new MediaPlayer();
             songFiles = Array.Empty<string>();
             VolumeSlider.Value = mediaPlayer.Volume * 100;
+            modeIcon.Kind = PackIconKind.ShuffleVariant; // Оновлюємо іконку на shuffle для послідовного відтворення
+            btnMode.ToolTip = "Sequential Mode";
 
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -55,7 +57,7 @@ namespace MusicPlayer
 
         private void btnFile_Click(object sender, RoutedEventArgs e)
         {
-            string musicDirectory = @"C:\Users\Roman\Desktop\Music";
+            string musicDirectory = @"C:\Users\Note\Desktop\Music";
             songFiles = Directory.GetFiles(musicDirectory, "*.mp3");
 
             var songSelectionWindow = new SongSelectionWindow(songFiles);
