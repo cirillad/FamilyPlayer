@@ -58,7 +58,7 @@
                         </Button>
                     </Grid>
                 </Canvas>
-                <Image Margin="10" Height="200" x:Name="Musicimg" Stretch="Uniform" Source="C:\Users\Roman\Desktop\GroupProject1\Images\MusicIcon.png"/>
+                <Image Margin="10" Height="200" x:Name="Musicimg" Stretch="Uniform" Source="C:\Users\Roman\Desktop\GP1\Images\MusicIcon.png"/>
                 <TextBlock Margin="10" FontSize="19" Text="Song name" Foreground="White" TextAlignment="Center" FontWeight="SemiBold" x:Name="lblSongName" />
                 <TextBlock FontSize="11" Text="C# WPF Mp3 Music Player" Foreground="White" TextAlignment="Center" FontWeight="ExtraLight" x:Name="lblArtistName" Width="144" />
                 <Grid Margin="0 30 0 0">
@@ -93,7 +93,7 @@
                         </Button>
                     </Grid>
                 </Canvas>
-
+                <MediaElement x:Name="mediaElement" Visibility="Hidden" />
             </StackPanel>
         </materialDesign:Card>
     </Grid>

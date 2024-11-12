@@ -20,7 +20,11 @@ namespace MusicPlayer
         private DispatcherTimer timer;
         private bool isFavorite = false;
         private bool isRepeatMode = false;
+        private bool isSequentialMode = true;
         private bool isMuted = false;
+        private double previousVolume = 0.5; // Змінна для збереження рівня гучності
+
+
 
         public MusicPlayerWindow()
         {
@@ -28,6 +32,8 @@ namespace MusicPlayer
             mediaPlayer = new MediaPlayer();
             songFiles = Array.Empty<string>();
             VolumeSlider.Value = mediaPlayer.Volume * 100;
+            modeIcon.Kind = PackIconKind.ShuffleVariant; // Оновлюємо іконку на shuffle для послідовного відтворення
+            btnMode.ToolTip = "Sequential Mode";
 
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -68,7 +74,7 @@ namespace MusicPlayer
                 UpdateSongInfo(songPath);
                 isPlaying = true;
                 isFavorite = CheckIfFavorite(songPath);
-                UpdateLikeButtonIcon(); 
+                UpdateLikeButtonIcon();
             }
         }
 
@@ -86,7 +92,7 @@ namespace MusicPlayer
                     lblMusicLength.Text = $"{duration.Minutes}:{duration.Seconds:D2}";
                     TimerSlider.Maximum = duration.TotalSeconds;
                 }
-                timer.Start(); 
+                timer.Start();
             };
 
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
@@ -98,7 +104,17 @@ namespace MusicPlayer
 
         private void MediaPlayer_MediaEnded(object sender, EventArgs e)
         {
-            btnPNext_Click(null, null); 
+            if (isRepeatMode)
+            {
+                // Якщо режим повтору, програємо поточну пісню знову
+                PlaySelectedSong(songFiles[currentSongIndex]);
+                UpdateSongInfo(songFiles[currentSongIndex]);
+            }
+            else if (isSequentialMode)
+            {
+                // Якщо режим послідовного відтворення, йдемо до наступної пісні
+                btnPNext_Click(null, null);
+            }
         }
 
         private void StopCurrentSong()
@@ -206,7 +222,7 @@ namespace MusicPlayer
             {
                 mediaPlayer.Play();
                 isPlaying = true;
-                timer.Start(); 
+                timer.Start();
 
                 (btnPlay.Content as StackPanel).Children.Clear();
                 (btnPlay.Content as StackPanel).Children.Add(new PackIcon { Kind = PackIconKind.Pause, Width = 20, Height = 20 });
@@ -215,16 +231,39 @@ namespace MusicPlayer
 
         private void btnMode_Click(object sender, RoutedEventArgs e)
         {
-            isRepeatMode = !isRepeatMode;
+            // Перемикаємо режими між Repeat та Sequential
+            if (isRepeatMode)
+            {
+                isRepeatMode = false;
+                isSequentialMode = true;
+                modeIcon.Kind = PackIconKind.ShuffleVariant; // Оновлюємо іконку на shuffle для послідовного відтворення
+                btnMode.ToolTip = "Sequential Mode";
+            }
+            else
+            {
+                isRepeatMode = true;
+                isSequentialMode = false;
+                modeIcon.Kind = PackIconKind.Repeat; // Оновлюємо іконку на repeat для режиму повтору
+                btnMode.ToolTip = "Repeat Mode";
+            }
 
-            // Змінюємо іконку відповідно до режиму
-            modeIcon.Kind = isRepeatMode ? PackIconKind.Repeat : PackIconKind.ShuffleVariant;
-
-            // Змінюємо підказку для користувача
-            btnMode.ToolTip = isRepeatMode ? "Repeat Mode" : "Sequential Mode";
-
-            // Додайте логіку для керування режимами відтворення за потреби
-            // Наприклад: player.SetPlayMode(isRepeatMode ? PlayMode.Repeat : PlayMode.Sequential);
+            // Перевіряємо, чи пісня закінчилась, і якщо так, виконуємо відповідну дію
+            if (mediaPlayer != null && mediaPlayer.NaturalDuration.HasTimeSpan)
+            {
+                if (mediaPlayer.Position >= mediaPlayer.NaturalDuration.TimeSpan)
+                {
+                    if (isRepeatMode)
+                    {
+                        // Якщо режим повтору, повторюємо поточну пісню
+                        PlaySelectedSong(songFiles[currentSongIndex]);
+                    }
+                    else
+                    {
+                        // Якщо режим послідовного відтворення, йдемо до наступної пісні
+                        btnPNext_Click(null, null);
+                    }
+                }
+            }
         }
 
         private void btnLike_Click(object sender, RoutedEventArgs e)
@@ -243,7 +282,7 @@ namespace MusicPlayer
                         {
                             File.Delete(favoritePath);
                             MessageBox.Show("The song has been removed from favorites.");
-                            isFavorite = false; 
+                            isFavorite = false;
                         }
                         else
                         {
@@ -256,7 +295,7 @@ namespace MusicPlayer
                         {
                             File.Copy(songPath, favoritePath);
                             MessageBox.Show("The song has been added to favorites.");
-                            isFavorite = true; 
+                            isFavorite = true;
                         }
                         else
                         {
@@ -264,7 +303,7 @@ namespace MusicPlayer
                         }
                     }
 
-                    UpdateLikeButtonIcon(); 
+                    UpdateLikeButtonIcon();
 
                     UpdateFavoriteStatus();
                 }
@@ -304,22 +343,22 @@ namespace MusicPlayer
 
         private void btnMute_Click(object sender, RoutedEventArgs e)
         {
-            if (isMuted)
+            // Якщо звук вимкнений, зберігаємо поточний рівень гучності
+            if (mediaElement.IsMuted)
             {
-                // Якщо звук вимкнений, вмикаємо його
-                mediaPlayer.Volume = 1.0; // Встановлюємо максимальний рівень гучності
-                volumeIcon.Kind = PackIconKind.VolumeHigh; // Змінюємо іконку на VolumeHigh
+                mediaElement.IsMuted = false;
+                VolumeSlider.Value = previousVolume; // Відновлюємо попередній рівень гучності
+                volumeIcon.Kind = PackIconKind.VolumeHigh; // Змінюємо іконку на гучний звук
             }
             else
             {
-                // Якщо звук включений, вимикаємо його
-                mediaPlayer.Volume = 0; // Встановлюємо звук на 0
-                volumeIcon.Kind = PackIconKind.VolumeMute; // Змінюємо іконку на VolumeMute
+                previousVolume = VolumeSlider.Value; // Зберігаємо поточний рівень гучності
+                mediaElement.IsMuted = true;
+                VolumeSlider.Value = 0; // Вимикаємо звук
+                volumeIcon.Kind = PackIconKind.VolumeMute; // Змінюємо іконку на вимкнений звук
             }
-
-            // Перемикаємо стан
-            isMuted = !isMuted;
         }
+
 
         private bool CheckIfFavorite(string songPath)
         {
@@ -350,7 +389,7 @@ namespace MusicPlayer
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (mediaPlayer.NaturalDuration.HasTimeSpan && mediaPlayer.Position < mediaPlayer.NaturalDuration.TimeSpan)
+            if (mediaPlayer != null && mediaPlayer.NaturalDuration.HasTimeSpan)
             {
                 lblCurrentTime.Text = $"{mediaPlayer.Position.Minutes}:{mediaPlayer.Position.Seconds:D2}";
                 TimerSlider.Value = mediaPlayer.Position.TotalSeconds;

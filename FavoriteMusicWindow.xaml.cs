@@ -16,7 +16,7 @@ namespace MusicPlayer
         private string[] songFiles;
         private int currentSongIndex;
         private bool isPlaying = false;
-        private string favoriteFolder = @"C:\Users\Note\Desktop\Favorite Music";
+        private string favoriteFolder = @"C:\Users\Roman\Desktop\Favorite Music";
         private DispatcherTimer timer;
         private bool isFavorite = false;
         private bool isRepeatMode = false;
@@ -51,7 +51,7 @@ namespace MusicPlayer
 
         private void btnFile_Click(object sender, RoutedEventArgs e)
         {
-            string musicDirectory = @"C:\Users\Note\Desktop\Music";
+            string musicDirectory = @"C:\Users\Roman\Desktop\Music";
             songFiles = Directory.GetFiles(musicDirectory, "*.mp3");
 
             var songSelectionWindow = new SongSelectionWindow(songFiles);

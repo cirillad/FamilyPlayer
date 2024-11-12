@@ -8,7 +8,7 @@ namespace MusicPlayer
 {
     public partial class DownloadSongWindow : Window
     {
-        public event EventHandler<(string songTitle, string artist, string songPath)> SongDownloaded; 
+        public event EventHandler<(string songTitle, string artist, string songPath)> SongDownloaded;
 
         public DownloadSongWindow()
         {
@@ -28,14 +28,19 @@ namespace MusicPlayer
             }
 
             string musicFolderPath = @"C:\Users\Roman\Desktop\Music";
-            string fileName = $"{songTitle} - {artist}.mp3"; 
+            string fileName = $"{songTitle} - {artist}.mp3";
             string filePath = Path.Combine(musicFolderPath, fileName);
 
             try
             {
                 using (WebClient webClient = new WebClient())
                 {
-                    webClient.DownloadFile(songUrl, filePath);
+                    // Завантаження файлу за тимчасовим шляхом
+                    string tempFilePath = Path.Combine(musicFolderPath, $"{Guid.NewGuid()}.tmp");
+                    webClient.DownloadFile(new Uri(songUrl), tempFilePath);
+
+                    // Перейменування завантаженого файлу в формат .mp3
+                    File.Move(tempFilePath, filePath);
                 }
 
                 SaveSongMetadata(songTitle, artist, fileName);
