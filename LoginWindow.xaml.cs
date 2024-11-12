@@ -8,6 +8,7 @@ namespace MusicPlayer
     public partial class LoginWindow : Window
     {
         private readonly MusicPlayerContext context = new MusicPlayerContext();
+
         public LoginWindow()
         {
             InitializeComponent();
@@ -17,6 +18,14 @@ namespace MusicPlayer
         {
             string username = UsernameTextBox.Text.Trim();
             string password = PasswordTextBox.Password;
+            string confirmPassword = ConfirmPasswordBox.Password;
+
+            // Перевірка на збіг паролів
+            if (password != confirmPassword)
+            {
+                MessageBox.Show("Passwords do not match. Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             if (AuthenticateUser(username, password))
             {
@@ -44,14 +53,10 @@ namespace MusicPlayer
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-            // Закриття поточного вікна
             this.Close();
-
-            // Створення та відкриття MainWindow
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
         }
-
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
