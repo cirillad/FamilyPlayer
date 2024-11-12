@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using FamilyPlayer.Data;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -6,8 +7,7 @@ namespace MusicPlayer
 {
     public partial class LoginWindow : Window
     {
-        private string userFilePath = "users.txt"; 
-
+        private readonly MusicPlayerContext context = new MusicPlayerContext();
         public LoginWindow()
         {
             InitializeComponent();
@@ -15,36 +15,25 @@ namespace MusicPlayer
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            string username = UsernameTextBox.Text; 
-            string password = PasswordTextBox.Password; 
+            string username = UsernameTextBox.Text.Trim();
+            string password = PasswordTextBox.Password;
 
-            if (ValidateUser(username, password))
+            if (AuthenticateUser(username, password))
             {
+                MessageBox.Show("Login successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 MainMenu mainMenu = new MainMenu();
                 mainMenu.Show();
-                this.Close(); 
+                this.Close();
             }
             else
             {
-                MessageBox.Show("Invalid username or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Invalid username or password.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private bool ValidateUser(string username, string password)
+        private bool AuthenticateUser(string username, string password)
         {
-            if (File.Exists(userFilePath))
-            {
-                var users = File.ReadAllLines(userFilePath);
-                foreach (var user in users)
-                {
-                    var parts = user.Split(':');
-                    if (parts.Length == 2 && parts[0] == username && parts[1] == password)
-                    {
-                        return true; 
-                    }
-                }
-            }
-            return false; 
+            return context.Users.Any(u => u.Username == username && u.Password == password);
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
