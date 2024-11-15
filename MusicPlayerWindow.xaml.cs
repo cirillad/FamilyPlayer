@@ -106,9 +106,15 @@ namespace MusicPlayer
         {
             if (isRepeatMode)
             {
-                // Якщо режим повтору, програємо поточну пісню знову
-                PlaySelectedSong(songFiles[currentSongIndex]);
-                UpdateSongInfo(songFiles[currentSongIndex]);
+                // Переміщуємо позицію плеєра на початок
+                mediaPlayer.Position = TimeSpan.Zero;
+
+                // Оновлюємо інтерфейс
+                TimerSlider.Value = 0;
+                lblCurrentTime.Text = "0:00";
+
+                // Відновлюємо відтворення
+                mediaPlayer.Play();
             }
             else if (isSequentialMode)
             {
@@ -116,6 +122,8 @@ namespace MusicPlayer
                 btnPNext_Click(null, null);
             }
         }
+
+
 
         private void StopCurrentSong()
         {
@@ -391,10 +399,14 @@ namespace MusicPlayer
         {
             if (mediaPlayer != null && mediaPlayer.NaturalDuration.HasTimeSpan)
             {
-                lblCurrentTime.Text = $"{mediaPlayer.Position.Minutes}:{mediaPlayer.Position.Seconds:D2}";
-                TimerSlider.Value = mediaPlayer.Position.TotalSeconds;
+                if (mediaPlayer.Position < mediaPlayer.NaturalDuration.TimeSpan)
+                {
+                    lblCurrentTime.Text = $"{mediaPlayer.Position.Minutes}:{mediaPlayer.Position.Seconds:D2}";
+                    TimerSlider.Value = mediaPlayer.Position.TotalSeconds;
+                }
             }
         }
+
 
         private void TimerSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
