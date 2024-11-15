@@ -52,6 +52,11 @@
                 <PasswordBox Name="PasswordTextBox" Background="#292929" Foreground="White"
                              BorderBrush="#610F03" Margin="10,0,10,10"/>
 
+                <!-- Поле для підтвердження пароля -->
+                <TextBlock Text="Confirm Password:" FontWeight="Bold" Foreground="White" Margin="10,5,0,5"/>
+                <PasswordBox Name="ConfirmPasswordBox" Background="#292929" Foreground="White"
+                             BorderBrush="#610F03" Margin="10,0,10,10"/>
+
                 <!-- Кнопка "Login" -->
                 <Button Style="{StaticResource CActionButtons}" Content="Login" Margin="0 10 0 0" 
                         Width="100" Height="30" HorizontalAlignment="Center" 
